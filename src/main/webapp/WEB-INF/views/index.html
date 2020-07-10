@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+    let query = 'https://api.nasa.gov/planetary/apod?api_key=UwEV735twD7Ne7y85PkA22ZRGFvm2c3P50LoIya5';
+    let request = new XMLHttpRequest();
+    request.open('GET', query);
+    request.onload = function() {
+        if (request.status === 200) {
+            let response = JSON.parse(request.responseText);
+            document.getElementById('img-of-the-day').setAttribute('src', response.url);
+        }
+    };
+    request.send();
+</script>
+<body>
+<img id="img-of-the-day">
+
+<div>
+    <form method="post" th:action="@{/comments/comment-save}" th:object="${comment}">
+        <select th:field="*{point}">
+            <option th:value="1" th:text="1"></option>
+            <option th:value="2" th:text="2"></option>
+            <option th:value="3" th:text="3"></option>
+            <option th:value="4" th:text="4"></option>
+            <option th:value="5" th:text="5"></option>
+        </select>
+        <h4>Author:</h4>
+        <input type="text" th:field="*{commenter}"/>
+
+        <h4>Feedback:</h4>
+        <textarea th:field="*{detail}" cols="30" rows="10"></textarea>
+        <input type="submit" value="Save"/>
+    </form>
+</div>
+
+<div>
+    <th:block th:each="comment : ${comments}">
+        <div>
+            <hr>
+            <p th:text="${comment.point + '* | '+ comment.commenter + '  - (' + comment.date + ')'}"></p>
+            <h3 th:text="${comment.detail}"></h3>
+            <p th:text="${comment.upVote}"></p>
+            <a th:href="@{/comments/comment-like/__${comment.id}__}"><button>Like</button></a>
+        </div>
+    </th:block>
+</div>
+
+</body>
+</html>
